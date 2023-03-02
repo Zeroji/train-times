@@ -1,0 +1,89 @@
+body {
+    font-family: sans-serif;
+}
+
+.debug {
+    opacity: 0.5;
+    font-family: monospace;
+    font-size: smaller;
+}
+
+.trains {
+    color: white;
+    display: grid;
+
+    grid-template-columns: minmax(50px, 1fr) minmax(50px, 1fr) minmax(50px, 4fr) max-content;
+
+    &>tbody,
+    &>tbody>tr {
+        display: contents;
+    }
+
+    & td {
+        padding: 4px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    td.platform[active] span {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        aspect-ratio: 1;
+        width: 24px;
+        box-sizing: border-box;
+        border: 2px solid white;
+        border-radius: 5px;
+        font-weight: bolder;
+    }
+
+    &.arrivals {
+        background-color: #2c7743;
+
+        tr.odd td {
+            background-color: #315c38;
+        }
+    }
+
+    &.departures {
+        background-color: #064b97;
+
+        tr.odd td {
+            background-color: #091e62;
+        }
+    }
+}
+
+.time-spacer {
+    padding: 4px;
+
+    td {
+        grid-column-start: span 4;
+
+        display: block;
+        border: 2px solid white;
+        border-radius: 8px;
+        margin: 4px;
+
+        &::first-letter {
+            text-transform: uppercase;
+        }
+    }
+}
+
+.train {
+    .type {
+        font-size: smaller;
+    }
+
+    .number {
+        font-weight: bolder;
+    }
+
+    .time b {
+        font-size: large;
+        font-weight: bold;
+        color: yellow;
+    }
+}

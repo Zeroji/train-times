@@ -6,5 +6,6 @@
 export default (config, env, helpers) => {
     if (env.isProd) {
         config.devtool = false;
+        config.output.publicPath = '/train-times/';
     }
 };

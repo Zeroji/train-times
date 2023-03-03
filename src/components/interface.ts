@@ -71,4 +71,4 @@ interface TrainProps {
     tt_row: number;
 }
 
-export { Direction, TimeSpacerProps, TrainProps };
+export { Direction, EventLevel, TimeSpacerProps, TrainProps, TrainStatus };

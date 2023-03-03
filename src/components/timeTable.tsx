@@ -1,28 +1,14 @@
 import { Component, Fragment, FunctionalComponent, h } from 'preact'
 import { Direction, TimeSpacerProps, TrainProps } from './interface'
+import { Train } from './train';
 
 const BaseURL = "https://garesetconnexions-online.azure-api.net";
 const DateOptions: [undefined, Intl.DateTimeFormatOptions] = [undefined, { weekday: 'long', day: 'numeric', month: 'long' }]
-const TimeOptions: [undefined, Intl.DateTimeFormatOptions] = [undefined, { hour: 'numeric', minute: '2-digit' }];
 
 const TimeSpacer: FunctionalComponent<TimeSpacerProps> = (props: TimeSpacerProps) => {
     return <tr class="time-spacer">
         <td colSpan={4}>
             {props.time.toLocaleDateString(...DateOptions)}
-        </td>
-    </tr >;
-}
-
-const Train: FunctionalComponent<TrainProps> = (props: TrainProps) => {
-    return <tr className={"train " + (props.tt_row % 2 ? "odd" : "even")}>
-        <td className="type">
-            <span className="type">{props.trainType}</span>
-            <span className="number">{props.trainNumber}</span>
-        </td>
-        <td className="time"><b>{props.scheduledTime.toLocaleTimeString(...TimeOptions)}</b></td>
-        <td className="dest">{props.traffic.destination}</td>
-        <td className="platform" data-active={props.platform.isTrackactive || null}>
-            <span className="track">{props.platform.track}</span>
         </td>
     </tr >;
 }

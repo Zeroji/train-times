@@ -12,7 +12,13 @@ body {
     color: white;
     display: grid;
 
-    grid-template-columns: minmax(50px, 1fr) minmax(50px, 1fr) minmax(50px, 4fr) max-content;
+    @media (orientation: portrait) {
+        grid-template-columns: 16vw 14vw minmax(50px, 4fr) max-content;
+    }
+
+    @media (orientation: landscape) {
+        grid-template-columns: 7vw 11vw minmax(50px, 4fr) max-content;
+    }
 
     &>tbody,
     &>tbody>tr {
@@ -30,8 +36,8 @@ body {
         display: flex;
         justify-content: center;
         align-items: center;
-        aspect-ratio: 1;
         width: 24px;
+        height: 24px;
         box-sizing: border-box;
         border: 2px solid white;
         border-radius: 5px;
@@ -83,9 +89,57 @@ body {
         font-weight: bolder;
     }
 
-    .time b {
-        font-size: large;
-        font-weight: bold;
-        color: yellow;
+    .time {
+        text-align: center;
+
+        b {
+            font-size: large;
+            font-weight: bold;
+            color: yellow;
+        }
+
+        &.late b {
+            color: orange;
+        }
+
+        &.deleted b {
+            color: gray;
+            text-decoration-line: line-through;
+            text-decoration-color: red;
+            text-decoration-thickness: 2px;
+        }
+
+        &.unknown b {
+            color: silver;
+        }
+    }
+
+    .time.deleted~.dest>.city {
+        color: gray;
+    }
+
+    .dest {
+        display: flex;
+        flex-direction: row;
+        justify-content: start;
+        align-items: center;
+        // column-gap: 4px;
+
+        .delayed {
+            background: orange;
+            max-width: fit-content;
+            padding: 3px;
+            border-radius: 3px;
+            color: white;
+            font-size: smaller;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        .city {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
     }
 }

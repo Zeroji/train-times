@@ -30,10 +30,10 @@ const Train: FunctionalComponent<TrainProps> = (props: TrainProps) => {
     let badges = [];
     let delay = props.informationStatus.delay;
     if (delay !== null && delay > 0) {
-        let h = Math.floor(delay / 60);
-        let m = delay % 60;
-        let text = m + 'm';
-        if (h > 0) text = h + 'h' + String(m).padStart(2, '0');
+        let hours = Math.floor(delay / 60);
+        let minutes = delay % 60;
+        let text = minutes + 'm';
+        if (hours > 0) text = hours + 'h' + String(minutes).padStart(2, '0');
         badges.push(<span className="delayed">+{text}</span>);
     }
 

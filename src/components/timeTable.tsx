@@ -25,6 +25,7 @@ interface TimeTableProps {
 interface TimeTableState {
     loading: boolean;
     lastUpdate?: Date;
+    direction?: Direction; // Actual direction being shown
     trains: TrainProps[];
 }
 
@@ -41,6 +42,7 @@ class TimeTable extends Component<TimeTableProps, TimeTableState> {
         this.state = {
             loading: false,
             lastUpdate: null,
+            direction: null,
             trains: [],
         };
     }
@@ -49,10 +51,10 @@ class TimeTable extends Component<TimeTableProps, TimeTableState> {
         // Make request
         this.setState({ ...this.state, loading: true });
 
-        let dir = this.props.direction + "s";
+        let fetchDir = this.props.direction;
         let uic = this.props.uic;
-        if ((dir !== undefined)) {
-            let url = `${BaseURL}/API/PIV/${dir}/${this.props.uic}`;
+        if ((fetchDir !== undefined)) {
+            let url = `${BaseURL}/API/PIV/${fetchDir}s/${this.props.uic}`;
             console.debug(`Requesting data from ${url}`);
             fetch(url, {
                 headers: {
@@ -65,7 +67,7 @@ class TimeTable extends Component<TimeTableProps, TimeTableState> {
                     if (Array.isArray(data)) {
                         // TODO: Clean up inconsistencies in informationStatus.trainStatus codes
                         this.setState({
-                            loading: false, lastUpdate: new Date(), trains: data.map(train => {
+                            loading: false, lastUpdate: new Date(), direction: fetchDir, trains: data.map(train => {
                                 train.scheduledTime = new Date(train.scheduledTime);
                                 train.actualTime = new Date(train.actualTime);
                                 return train;
@@ -103,8 +105,10 @@ class TimeTable extends Component<TimeTableProps, TimeTableState> {
         let depClass = 'departures';
         let arrClass = 'arrivals';
 
-        if (props.direction === Direction.Departure) depClass += ' active';
-        if (props.direction === Direction.Arrival) arrClass += ' active';
+        let direction = state.direction || props.direction;
+
+        if (direction === Direction.Departure) depClass += ' active';
+        if (direction === Direction.Arrival) arrClass += ' active';
 
         return <Fragment>
             <nav className="selector">
@@ -112,14 +116,13 @@ class TimeTable extends Component<TimeTableProps, TimeTableState> {
                 <div className={arrClass} onClick={props.setArrivals}>Arrivals</div>
                 <div className="updates">{updateText}</div>
             </nav>
-            <table class={"trains " + props.direction}><tbody>
+            <table class={"trains " + direction}><tbody>
                 {fragments}
             </tbody></table>
         </Fragment>;
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        // console.log("did update", this.props, prevProps, prevState.trains.length, this.state.trains.length);
         if ((this.props.uic != prevProps.uic) || (this.props.direction != prevProps.direction)) {
             this.fetchTrains();
         }

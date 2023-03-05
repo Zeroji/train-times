@@ -10,6 +10,30 @@ body {
     font-size: smaller;
 }
 
+nav.selector {
+    width: 100%;
+    display: flex;
+
+    &>div {
+        flex: 1 0 0;
+        background-color: #555;
+        padding: .5rem;
+        color: white;
+    }
+
+    .departures.active {
+        background-color: #064b97;
+    }
+
+    .arrivals.active {
+        background-color: #315c38;
+    }
+
+    .updates {
+        background-color: orange;
+    }
+}
+
 .trains {
     color: white;
     display: grid;

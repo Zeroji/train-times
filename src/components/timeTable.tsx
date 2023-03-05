@@ -4,6 +4,7 @@ import { Train } from './train';
 
 const BaseURL = "https://garesetconnexions-online.azure-api.net";
 const DateOptions: [undefined, Intl.DateTimeFormatOptions] = [undefined, { weekday: 'long', day: 'numeric', month: 'long' }]
+const TimeOptions: [undefined, Intl.DateTimeFormatOptions] = [undefined, { hour: 'numeric', minute: '2-digit' }];
 
 const TimeSpacer: FunctionalComponent<TimeSpacerProps> = (props: TimeSpacerProps) => {
     return <tr class="time-spacer">
@@ -15,12 +16,15 @@ const TimeSpacer: FunctionalComponent<TimeSpacerProps> = (props: TimeSpacerProps
 
 interface TimeTableProps {
     direction: Direction;
+    setDepartures: () => void;
+    setArrivals: () => void;
     uic: string;
 }
 
 
 interface TimeTableState {
     loading: boolean;
+    lastUpdate?: Date;
     trains: TrainProps[];
 }
 
@@ -36,13 +40,14 @@ class TimeTable extends Component<TimeTableProps, TimeTableState> {
         super();
         this.state = {
             loading: false,
+            lastUpdate: null,
             trains: [],
         };
     }
 
     fetchTrains() {
         // Make request
-        this.setState({ loading: true, trains: this.state.trains });
+        this.setState({ ...this.state, loading: true });
 
         let dir = this.props.direction + "s";
         let uic = this.props.uic;
@@ -50,7 +55,6 @@ class TimeTable extends Component<TimeTableProps, TimeTableState> {
             let url = `${BaseURL}/API/PIV/${dir}/${this.props.uic}`;
             console.debug(`Requesting data from ${url}`);
             fetch(url, {
-                // fetch(`./assets/samples/dep.json`, {
                 headers: {
                     'ocp-apim-subscription-key': '3fd14f8500c64ed69e7cb05f2c3a4477'
                 }
@@ -59,8 +63,9 @@ class TimeTable extends Component<TimeTableProps, TimeTableState> {
                 .then(res => res.json())
                 .then(data => {
                     if (Array.isArray(data)) {
+                        // TODO: Clean up inconsistencies in informationStatus.trainStatus codes
                         this.setState({
-                            loading: false, trains: data.map(train => {
+                            loading: false, lastUpdate: new Date(), trains: data.map(train => {
                                 train.scheduledTime = new Date(train.scheduledTime);
                                 train.actualTime = new Date(train.actualTime);
                                 return train;
@@ -75,12 +80,12 @@ class TimeTable extends Component<TimeTableProps, TimeTableState> {
     }
 
     componentDidMount() {
-        // console.log("This should start fetching API stuff");
+        // Trigger train update
         setTimeout(this.fetchTrains.bind(this), 10);
     }
 
-    render(props, state) {
-        let lastDay = new Date(Date.now()); // - 2 * 86400_000);
+    render(props: TimeTableProps, state: TimeTableState) {
+        let lastDay = new Date(Date.now());
 
         let fragments = [];
         state.trains.forEach((train, i) => {
@@ -91,9 +96,22 @@ class TimeTable extends Component<TimeTableProps, TimeTableState> {
             fragments.push(<Train tt_row={i} {...train} />);
         });
 
+        let updateText = '';
+        if (state.loading) updateText = 'Updating...';
+        else if (state.lastUpdate != null) updateText = 'Updated: ' + state.lastUpdate.toLocaleTimeString(...TimeOptions);
+
+        let depClass = 'departures';
+        let arrClass = 'arrivals';
+
+        if (props.direction === Direction.Departure) depClass += ' active';
+        if (props.direction === Direction.Arrival) arrClass += ' active';
+
         return <Fragment>
-            <h2>List of {props.direction}</h2>
-            <span class="debug">UIC={props.uic}</span>
+            <nav className="selector">
+                <div className={depClass} onClick={props.setDepartures}>Departures</div>
+                <div className={arrClass} onClick={props.setArrivals}>Arrivals</div>
+                <div className="updates">{updateText}</div>
+            </nav>
             <table class={"trains " + props.direction}><tbody>
                 {fragments}
             </tbody></table>

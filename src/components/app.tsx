@@ -16,7 +16,7 @@ class App extends Component<AppProps, AppState> {
 			uic: '0087747006',
 		};
 
-		let match = window.location.hash.match(/(dep|arr)-(\d+)/);
+		let match = (typeof window === "undefined") ? null : window.location.hash.match(/(dep|arr)-(\d+)/);
 		if (match !== null) {
 			this.state = {
 				direction: match[1] == 'dep' ? Direction.Departure : Direction.Arrival,

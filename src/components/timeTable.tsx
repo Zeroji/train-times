@@ -95,7 +95,7 @@ class TimeTable extends Component<TimeTableProps, TimeTableState> {
                 fragments.push(<TimeSpacer time={train.scheduledTime} />);
                 lastDay = train.scheduledTime;
             }
-            fragments.push(<Train tt_row={i} {...train} />);
+            fragments.push(<Train key={train.trainNumber} tt_row={i} {...train} />);
         });
 
         let updateText = '';
@@ -114,7 +114,7 @@ class TimeTable extends Component<TimeTableProps, TimeTableState> {
             <nav className="selector">
                 <div className={depClass} onClick={props.setDepartures}>Departures</div>
                 <div className={arrClass} onClick={props.setArrivals}>Arrivals</div>
-                <div className="updates">{updateText}</div>
+                <div className="updates" onClick={() => { if (!state.loading) this.fetchTrains(); }}>{updateText}</div>
             </nav>
             <table class={"trains " + direction}><tbody>
                 {fragments}
